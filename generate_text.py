@@ -16,6 +16,6 @@ def generate():
     return grammar.flatten('#origin#') + "\n"
 
 
-print('Run Successful')
-print(msg)
+
+
 
