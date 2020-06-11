@@ -3,14 +3,14 @@ import random
 #this section lays out conversion rules for text to code
 sizes = {
 
-    'tiny': 2,
-    'small': 5,
-    'medium': 10,
-    'large': 15,
-    'huge': 25
+    'tiny': 50,
+    'small': 60,
+    'medium': 70,
+    'large': 80,
+    'huge': 90
 }
 
-size = 750
+size = 450
 
 LEFT_SIDE = 0
 RIGHT_SIDE = size

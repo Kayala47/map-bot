@@ -18,7 +18,7 @@ dwg.add(dwg.circle(center=(520,220),
     stroke=svgwrite.rgb(10, 10, 16, '%'),
     fill='yellow')
 )
-dwg.add(dwg.line(start=(100,100), end=(700,700), stroke='#000', stroke_width='10px'))
+dwg.add(dwg.line(start=(100,100), end=(700,700), stroke='purple', stroke_width='5px'))
 dwg.add(dwg.text('Test', insert=(0, 0.2), fill='red'))
 dwg.save()
 
@@ -29,19 +29,19 @@ def drawThis(phrase, dwg):
     cutUpPhrase = phrase.split(" ")
 
     sizeTT = cutUpPhrase[2]
-    colorTT = cutUpPhrase[3]
+    color = cutUpPhrase[3]
     objTT = cutUpPhrase[4]
     locTT = phrase[phrase.index('the') + 4:-1]
-    print(locTT)
-
     
-    color = colors.to_rgb(colorTT)
     
-    print(color)
-
 
     size = sizes[sizeTT]
     location = locations[str(locTT)]
+
+    (x,y) = location
+    x = x + size if x == 0 else x - size
+    y = y + size if y == 0 else y - size
+    location = (x,y)
 
     #'object': ['lake', 'river', 'forest', 'road'],
     
@@ -55,6 +55,7 @@ def drawThis(phrase, dwg):
         drawStraightLine(dwg, color, size, location, chooseEndpt(location))
 
 
+    dwg.add(dwg.text(phrase, (100, 400)))
     return dwg
 
 def drawCircle(drawing, color, size, location):
@@ -62,9 +63,8 @@ def drawCircle(drawing, color, size, location):
     x,y = location
     #stroke=svgwrite.rgb(15,15,15,'%'),
 
-    x = x + 50 if x == 0 else x - 50
-    y = y + 50 if y == 0 else y - 50
-    drawing.add(drawing.circle(center=(x, y), r=size))#,  fill=color))
+   
+    drawing.add(drawing.circle(center=(x, y), r=size,  fill=color))
 
 def drawCurvedLine(drawing, color, size, loc1, loc2):
     #a river is a path that goes from one location to the other, filled with a color. The distance between banks is the size
@@ -83,7 +83,7 @@ def drawCurvedLine(drawing, color, size, loc1, loc2):
     pathString = "M " + str(x1) + " " + str(y1) + " " #start point
     pathString += "L " + str(x2) + " " + str(y2) #end point
 
-    drawing.add(drawing.path( d=pathString), stroke='#000')#, fill=color, stroke_width=size))
+    drawing.add(drawing.path( d=pathString, stroke='#000', fill=color, stroke_width=size))
 
     
 def drawSquare(drawing, color, size, loc):
@@ -91,22 +91,18 @@ def drawSquare(drawing, color, size, loc):
 
     x,y = loc
 
-    x = x + 50 if x == 0 else x - 50
-    y = y + 50 if y == 0 else y - 50
-
-    drawing.add(drawing.rect(insert=(x, y), size=(size,size)))#, fill=color))
+    drawing.add(drawing.rect((x, y), (size,size), fill=color))
 
 def drawStraightLine(drawing, color, size, loc1, loc2):
     #a road is a straight, but thick line that goes from one point to the other
     x1, y1 = loc1
     x2, y2 = loc2
 
-    (r,g,b) = color
+    size = size/10
 
-    pathString = "M " + str(x1) + " " + str(y1) + " " #start point
-    pathString += "L " + str(x2) + " " + str(y2) #end point
+    #(r,g,b) = color
 
-    drawing.add(drawing.line(start=(x1,y1), end=(x2,y2), stroke='#000', fill=svgwrite.rgb(r,g,b,'%'), stroke_width=size))
+    drawing.add(drawing.line(start=(x1,y1), end=(x2,y2), stroke=color, stroke_width=size))
 
 
 

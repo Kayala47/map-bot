@@ -1,4 +1,10 @@
+Draw a large blue road in the bottom left corner
+Draw a small green river in the top right corner
 Draw a large orange river in the top right corner
-Draw a small orange lake in the top right corner
-Draw a small green forest in the bottom right corner
-Draw a tiny orange river in the top left corner
+Draw a small pink road in the center
+Draw a large blue lake in the center
+Draw a huge green forest in the bottom right corner
+Draw a medium green road in the center
+Draw a medium orange lake in the center
+Draw a large green road in the top left corner
+Draw a small blue lake in the bottom left corner

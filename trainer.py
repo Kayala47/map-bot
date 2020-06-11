@@ -7,7 +7,7 @@ f = open('output.txt', 'w')
 
 size = getSize()
 
-for i in range(0,4):
+for i in range(0,10):
     phrase = generate()
 
     fixedPhrase = phrase.replace(" ", "-")
