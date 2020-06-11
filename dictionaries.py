@@ -10,10 +10,12 @@ sizes = {
     'huge': 25
 }
 
+size = 750
+
 LEFT_SIDE = 0
-RIGHT_SIDE = 100
+RIGHT_SIDE = size
 TOP = 0
-BOTTOM = 100
+BOTTOM = size
 
 
 locations = {
@@ -34,3 +36,7 @@ def chooseEndpt(startPt):
         chooseEndpt(startPt)
     else:
          return locations[end]
+
+
+def getSize():
+    return size
