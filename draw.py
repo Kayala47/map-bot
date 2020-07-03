@@ -6,8 +6,14 @@ import base64
 from wand.image import Image
 import random
 import svgutils.transform as st
+import math
 
 
+# Distance function
+def distance(xi,xii,yi,yii):
+    sq1 = (xi-xii)*(xi-xii)
+    sq2 = (yi-yii)*(yi-yii)
+    return math.sqrt(sq1 + sq2)
 
 def drawThis(phrase, dwg):
 
@@ -32,12 +38,13 @@ def drawThis(phrase, dwg):
     #'object': ['lake', 'river', 'forest', 'road'],
     
     if (objTT == 'lake'):
-        drawCircle(dwg, color, size, location)
+        circle = drawCircle(dwg, color, size, location)
+        prettifyWater(dwg, circle)
     elif (objTT == 'river'):
         drawStraightLine(dwg, color, size, location, chooseEndpt(location))
     elif(objTT == 'forest'):
         background = drawSquare(dwg, color, size, location)
-        fillWithTrees(dwg, background, size)
+        fillWithTrees(dwg, background)
     elif (objTT=='road'):
         drawStraightLine(dwg, color, size, location, chooseEndpt(location))
 
@@ -50,8 +57,9 @@ def drawCircle(drawing, color, size, location):
     x,y = location
     #stroke=svgwrite.rgb(15,15,15,'%'),
 
-   
-    drawing.add(drawing.circle(center=(x, y), r=size,  fill=color))
+    drawing.add(drawing.circle(center=(x, y), r=size,  fill=color, opacity="0.8"))
+
+    return (location, size)
 
 def drawCurvedLine(drawing, color, size, loc1, loc2):
     #a river is a path that goes from one location to the other, filled with a color. The distance between banks is the size
@@ -123,18 +131,53 @@ def fillWithTrees(dwg, background):
         dwg.add(dwg.image(href=(pngdata), insert=(treeX,treeY), size=(size/5, size/5)))
 
 
+def prettifyWater(dwg, background):
+    #I'll add some squiggles to anything that has water
+
+    numSquiggles = random.randint(10, 20)
+
+    img = Image(filename="src-images\water-squiggle.png")
+
+    image_data = img.make_blob(format='png')
+    encoded = base64.b64encode(image_data).decode()
+    pngdata = 'data:image/png;base64,{}'.format(encoded)
+
+    loc, rad = background
+    x, y = loc
+
+    for i in range(numSquiggles):
+        sqX = random.randint(x - rad, x + rad)
+        sqY = random.randint(y - rad, y + rad)
+
+        if distance(x, y, sqX, sqY) > rad:
+            #outside the circle
+            numSquiggles += 1
+            continue
+        else:
+            dwg.add(dwg.image(href=(pngdata), insert=(sqX, sqY), size=(rad/5, rad/5)))
+
+
+
+
+
+
+
 width = 50
 height= 100
 
 dwg = svgwrite.Drawing('images/test.svg', height=height, width=width, profile='tiny')
-dwg2 = svgwrite.Drawing('images/test2.svg', height=height, width=width, profile='tiny')
+#dwg2 = svgwrite.Drawing('images/test2.svg', height=height, width=width, profile='tiny')
 
-
-dwg.add(dwg.circle(center=(400,25),
+dwg.add(dwg.circle(center=(0,0),
     r=10, 
     stroke=svgwrite.rgb(15, 15, 15, '%'),
     fill='#eeeeee')
 )
+
+
+circle = drawCircle(dwg, "blue", 200, (300,400))
+prettifyWater(dwg, circle)
+
 
 dwg.add(dwg.circle(center=(520,220),
     r=90, 
@@ -146,8 +189,7 @@ dwg.add(dwg.text('Test', (300, 300), fill='red'))
 
 square = drawSquare(dwg, 'green', 100, (100,100))
 
-fillWithTrees(dwg2, square)
-
+fillWithTrees(dwg, square)
 
 img = Image(filename="src-images\water-squiggle.png")
 
@@ -159,10 +201,3 @@ pngdata = 'data:image/png;base64,{}'.format(encoded)
 image = dwg.add(dwg.image(href=(pngdata), insert=(100,500), size=(100,100)))
 
 dwg.save()
-dwg2.save()
-
-template = st.fromfile('images/test.svg')
-second_svg = st.fromfile('images/test2.svg')
-
-template.append(second_svg)
-template.save('images/merged.svg')
