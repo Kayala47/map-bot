@@ -1,26 +1,12 @@
 import svgwrite
 from matplotlib import colors
 from dictionaries import sizes, locations, chooseEndpt
+import emoji
+import base64
+from wand.image import Image
+import random
+import svgutils.transform as st
 
-width = 50
-height= 100
-
-dwg = svgwrite.Drawing('images/test.svg', height=height, width=width)
-dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
-dwg.add(dwg.circle(center=(400,25),
-    r=10, 
-    stroke=svgwrite.rgb(15, 15, 15, '%'),
-    fill='#eeeeee')
-)
-
-dwg.add(dwg.circle(center=(520,220),
-    r=90, 
-    stroke=svgwrite.rgb(10, 10, 16, '%'),
-    fill='yellow')
-)
-dwg.add(dwg.line(start=(100,100), end=(700,700), stroke='purple', stroke_width='5px'))
-dwg.add(dwg.text('Test', insert=(0, 0.2), fill='red'))
-dwg.save()
 
 
 def drawThis(phrase, dwg):
@@ -50,12 +36,13 @@ def drawThis(phrase, dwg):
     elif (objTT == 'river'):
         drawStraightLine(dwg, color, size, location, chooseEndpt(location))
     elif(objTT == 'forest'):
-        drawSquare(dwg, color, size, location)
+        background = drawSquare(dwg, color, size, location)
+        fillWithTrees(dwg, background, size)
     elif (objTT=='road'):
         drawStraightLine(dwg, color, size, location, chooseEndpt(location))
 
 
-    dwg.add(dwg.text(phrase, (100, 400)))
+    #dwg.add(dwg.text(phrase, (100, 400))) #we're not adding the text directly to the picture
     return dwg
 
 def drawCircle(drawing, color, size, location):
@@ -91,7 +78,13 @@ def drawSquare(drawing, color, size, loc):
 
     x,y = loc
 
-    drawing.add(drawing.rect((x, y), (size,size), fill=color))
+    square = drawing.rect((x, y), (size,size), fill=color, opacity="0.8")
+
+    #fillWithTrees(dwg, square, size)
+
+    drawing.add(square)
+
+    return [loc, size] #returns dimensions of the square for later use
 
 def drawStraightLine(drawing, color, size, loc1, loc2):
     #a road is a straight, but thick line that goes from one point to the other
@@ -105,5 +98,71 @@ def drawStraightLine(drawing, color, size, loc1, loc2):
     drawing.add(drawing.line(start=(x1,y1), end=(x2,y2), stroke=color, stroke_width=size))
 
 
+def fillWithTrees(dwg, background):
+    #it's going to draw several trees inside the "forest" square at random
+
+    numTrees = random.randint(80, 100)
+    print("{} tree(s) drawn".format(numTrees))
+
+    loc, size = background
+    x, y = loc
+
+    img = Image(filename="tree1.png")
+
+    # Then get raw PNG data and encode DIRECTLY into the SVG file.
+    image_data = img.make_blob(format='png')
+    encoded = base64.b64encode(image_data).decode()
+    pngdata = 'data:image/png;base64,{}'.format(encoded)
+
+    for i in range(0 ,numTrees):
+        #draws that many # of trees randomly in the square
+        treeX = random.randint(x, x + size)
+        treeY = random.randint(y, y + size)
 
 
+        dwg.add(dwg.image(href=(pngdata), insert=(treeX,treeY), size=(size/5, size/5)))
+
+
+width = 50
+height= 100
+
+dwg = svgwrite.Drawing('images/test.svg', height=height, width=width, profile='tiny')
+dwg2 = svgwrite.Drawing('images/test2.svg', height=height, width=width, profile='tiny')
+
+
+dwg.add(dwg.circle(center=(400,25),
+    r=10, 
+    stroke=svgwrite.rgb(15, 15, 15, '%'),
+    fill='#eeeeee')
+)
+
+dwg.add(dwg.circle(center=(520,220),
+    r=90, 
+    stroke=svgwrite.rgb(10, 10, 16, '%'),
+    fill='yellow')
+)
+dwg.add(dwg.line(start=(100,100), end=(700,700), stroke='purple', stroke_width='5px'))
+dwg.add(dwg.text('Test', (300, 300), fill='red'))
+
+square = drawSquare(dwg, 'green', 100, (100,100))
+
+fillWithTrees(dwg2, square)
+
+
+img = Image(filename="src-images\water-squiggle.png")
+
+# Then get raw PNG data and encode DIRECTLY into the SVG file.
+image_data = img.make_blob(format='png')
+encoded = base64.b64encode(image_data).decode()
+pngdata = 'data:image/png;base64,{}'.format(encoded)
+
+image = dwg.add(dwg.image(href=(pngdata), insert=(100,500), size=(100,100)))
+
+dwg.save()
+dwg2.save()
+
+template = st.fromfile('images/test.svg')
+second_svg = st.fromfile('images/test2.svg')
+
+template.append(second_svg)
+template.save('images/merged.svg')
