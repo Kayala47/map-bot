@@ -118,12 +118,99 @@ Explanation from: [Towards Data Science GAN Page](https://towardsdatascience.com
 
 We start by just being able to generate random variables (or as close to random as we can get).There are many different methods of generating these variables, including rejection sampling, Metropolis-Hasting algorithm, inverse transform method, etc.
 
-To create generative models, we essentially try to create random variables along a probability that we've established. To do this, we turn the data into a dimensional vector by stacking columns on top of each others. For example, we can represent an image of a dog as a vector. to generate a new image of a dog, we'd have to look at which variables are present where in other pictures of dogs, and where they would be probabilistically. Then, we can generate variables according to those probabilites. 
+To create generative models, we essentially try to create random variables along a probability that we've established. To do this, we turn the data into a dimensional vector by stacking columns on top of each others. For example, we can represent an image of a dog as a vector. to generate a new image of a dog, we'd have to look at which variables are present where in other pictures of dogs, and where they would be probabilistically. Then, we can generaactuallyte variables according to those probabilites. 
+
+> look more closely into transform method
+
+
 
 
 ## Sequence to Sequence Translation ##
 
+= a sequence to sequence model aims to map a fixed-length input with a fixed-length output where the length of the input and output may differ. Ex: Google Translare. 
+
+Explanation by: [Towards Data Science StS page](https://towardsdatascience.com/understanding-encoder-decoder-sequence-to-sequence-model-679e04af4346)
+
+![Encoder Decoder Model of Sequence to Sequence Translation](notes-imgs\sts-encoder-decoder.PNG)
+
+There are three parts to this model: 
+
+### Encoder ###
+
+This is a stack of LSTM or GRU elements. Each takes a single element of the input, collects information for it, and then propagates it forward. 
+- in question answering problems, you pass in each word one by one, marked with a number for its position in the sequence. 
+- you compute hidden states using the formula:
+![](notes-imgs\sts-encoder-formula.PNG)
+- it uses a recurrent neural network to apply appropriate weight to each previous s hidden state and the input vector
+
+### Intermediate (encoder) vector ###
+
+This is the final hidden state produced from the encoder. It aims to encapsulate all the ifnormation for all input elements and will act as the initial hidden state of the decoder part of the model. 
+
+### Decoder ###
+- another stack of recurrent units, each predicting an output y_t at time t. 
+- each recurrent unit accepts not only its own hidden unit, but also the hidden state from the previous unit and produces an answer for that. 
+-  for question answering, each unit would be producing one word of the answer. 
+- we use the previous hidden state to compute the next one. Using softmax, we calculate the outputs using the hidden state at the current step together with the respective weight. We're basically making a probability vector with softmax. 
+
+
 ## Transposed Convolutions ##
+= the Convolution operation reduces the spatial dimensions as we go deeper down the network and creates an abstract representation of the input image. It's good for things like image classification because you just have to predict an object's presence, but much more problematic for tasks like Object Localization, or Segmentation, where the spatial dimensions of the object ar necessary to predict the output bounding the box or segment the object. 
+
+> Does this mean it wouldn't be good for generating the image? Since it's not going to be very good at keeping track of where to put items? 
+>
+> Answer: no, there are techniques to fix this, such as using 'same' padding to preserve the input dimensions. This is done in a fully convolutional neural network.
+
+Explained by: [Towards Data Science TC page](https://towardsdatascience.com/transposed-convolution-demystified-84ca81b4baba#:~:text=Transposed%20convolution%20is%20also%20known,upsample%20the%20input%20feature%20map.)
+
+Another technique used for image segmentation is dividing 
+![](notes-imgs\trans-conv-same-padding.PNG)
+The problem with the above method is that it increases the computation cost because the convolution operation has to be applied to original input dimensinos throughout the network. 
+
+There is another method, referred to as Downsampling & Upsampling. In this method, you'd use a downsampling network to turn a high res image into a low res representation using CNN architectures. Then, you'd use the Upsampling network to take the abstract images and make their spatial dimensions equal to the input image. 
+
+> They didn't go into downsampling
+
+### Upsampling ###
+
+There are a couple of different techniques for this:
+
+1. Nearest neighbors - take a pixel from one location in the lower res file and make that the value for pixels near that location in the higher res file. You copy the value into the K-nearest neighbors, and the value of K depends on the expected output.
+
+![](notes-imgs\tc-nn.PNG)
+
+2. Bi-Linear Interpolation - you assign pixels to the output image based on a weighted average of the pixels closest to it in the input image.
+
+![](notes-imgs\tc-bilin.PNG)
+
+3. Bed of nails - the pixels of the input image (downsampled version) get copied to the ouput image in the position they'd be, and everything else turns into a 0. 
+
+![](notes-imgs\tc-bedNails.PNG)
+
+4. Max-Unpooling - this depends on the Max-Pooling layer in the CNN taking the max value and the index of that value and saving those. The image gets downsampled regularly, but then upsampling, the max's index value is used to put max values back in the output image. All others are 0. 
+
+![](notes-imgs\tc-maxPool.PNG)
+
+Using some of the methods above, transposed convolutions upsample the input feature map. There are some learnable parameters that affect the process. 
+
+The basic idea is as follows: (Consider a 2x2 input and expecting a 3x3 output)
+- You start with the top left corner of the input image and take that as your first element. Then, the entire kernel is multiplied one by one by the element and put into the appropriate place on the output image. 
+
+![](notes-imgs\tc-kernelxelem.PNG)
+
+- Continue doing this for the rest of the elements in the input image. 
+- you'll get some overlap. What you want to do is add up any elements that overlap. So for example, if a square would contain both a 2 and a 6, that square becomes an 8. 
+
+![](notes-imgs\tc-kernelxelem-total.PNG)
+
+The process of Transposed Convolution is also known as Deconvolution, but that's not a really good description since it implies removing the effects of convolution, and we're really not doing that here. 
+
+It can also be called upsampled convolution, fractionally strided convolution. This is because stride over the output is equivalent to fractional stride over the input. Ex: a stride of 2 over output is 1/2 stride over the input. 
+
+It is also referred to as backward strided convolution bc forward pass of Transposed Convolution is equivalent to backward pass of a normal convolution. 
+
+### The Problem ###
+Uneven overlap in some parts of the image causes artifacts, which lead to a "checkerboard" effect. To fix this, you can make sure that your kernel size is divisible by your stride. Ex: when your stride equals 2, you want your kernel size to be something like 2x2, 4x4, etc. 
 
 ## Recurrent Neural Networks (optional) ##
 
@@ -144,6 +231,13 @@ An embedded matrix is a linear mapping from the original space (one of k) to a r
 
 ### Token Embedding ###
 The purpose of Token Embeddings is to transform words into vector representation of fixed dimensions. for BERT, each word is represented as a 768-dimensional vector. Token Embedding is a layer which turns each word, or token, into a 768-dimensional vector representation. 
+
+### Stride ###
+
+Stride is the amount by which a kernel is moved when it passes over an image. Here, a kernel refers to a set block of pixels. So if your stride is set to one, the kernel moves along by one pixel every time it chooses to represent new pixels. 
+
+[Here is a good explanation on Quora](https://qr.ae/pNKznW)
+
 
 ## Others ##
 
