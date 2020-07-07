@@ -15,7 +15,10 @@ def distance(xi,xii,yi,yii):
     sq2 = (yi-yii)*(yi-yii)
     return math.sqrt(sq1 + sq2)
 
-def drawThis(phrase, dwg):
+def drawThis(phrase,dwg, fileName ):
+
+    
+    featuresList = [0, 0, 0, 0] #road, river, lake, forest
 
     #Draw a #size# #color# #object# in the #location#
     cutUpPhrase = phrase.split(" ")
@@ -48,9 +51,11 @@ def drawThis(phrase, dwg):
     elif (objTT=='road'):
         drawStraightLine(dwg, color, size, location, chooseEndpt(location))
 
+    
+    imgDetails = {"File Name": fileName, "Phrase": phrase, "Road": featuresList[0], "River": featuresList[1], "Lake": featuresList[2], "Forest": featuresList[3]}
 
     #dwg.add(dwg.text(phrase, (100, 400))) #we're not adding the text directly to the picture
-    return dwg
+    return dwg, imgDetails
 
 def drawCircle(drawing, color, size, location):
     #a lake is just a circle. It can be filled in with any color, but has a black rim
