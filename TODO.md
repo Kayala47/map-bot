@@ -1,16 +1,14 @@
 # To-do List
-As of 6/11/2020
+As of 7/6/2020
 
 ## Generating Images and Text
-- rectangles not appearing at all
 - add curves to rivers
 - change rivers/roads to be their own separate grammar, taking in start & endpts
 - change generation so that it accepts x,y locations
-- the code that I added to make sure shapes wouldn't go outside of the image is causing some to appear in in appropriate locations. It probably results from the inconstencies in how certain shapes determine their origin.
-- add imgs to generations
-- process phrases when stored in csv
 - add color filter to loaded images
+- rework csv so that it has columns for whether a feature is present or not
+- add more features to each image generation
 
 
 ## ML
-- ask Prof. Osborne about next steps
+- meet with Prof. Osborn Wed 7/8 @ 12pm for next steps and discussion
