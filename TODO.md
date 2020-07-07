@@ -5,8 +5,8 @@ As of 7/6/2020
 
 - add color filter to loaded images
 - add more features to each image generation
-- csv not showing up in preview? (small issue)
 - apply NLP to phrase before processing
+    - change drawPhrase so it accepts paragraph
 
 ### Optional ###
 - add curves to rivers
