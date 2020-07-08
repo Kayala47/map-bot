@@ -15,44 +15,52 @@ def distance(xi,xii,yi,yii):
     sq2 = (yi-yii)*(yi-yii)
     return math.sqrt(sq1 + sq2)
 
-def drawThis(phrase,dwg, fileName ):
+def drawThis(phrases, dwg, fileName):
 
     
     featuresList = [0, 0, 0, 0] #road, river, lake, forest
 
-    #Draw a #size# #color# #object# in the #location#
-    cutUpPhrase = phrase.split(" ")
+    for phrase in phrases:
 
-    sizeTT = cutUpPhrase[2]
-    color = cutUpPhrase[3]
-    objTT = cutUpPhrase[4]
-    locTT = phrase[phrase.index('the') + 4:-1]
+        #Draw a #size# #color# #object# in the #location#
+        cutUpPhrase = phrase.split(" ")
+        
+        sizeTT = cutUpPhrase[0]
+        color = cutUpPhrase[1]
+        objTT = cutUpPhrase[2]
+        locTT = " ".join(cutUpPhrase[3:])
+        
+        size = sizes[sizeTT]
+        location = locations[str(locTT)]
+
+        (x,y) = location
+        x = x + size if x == 0 else x - size
+        y = y + size if y == 0 else y - size
+        location = (x,y)
+
+        #draw background
+        dwg.add(dwg.rect((0, 0), (450,450), fill='grey', opacity="0.6"))
+
+
+        #'object': ['lake', 'river', 'forest', 'road'],
+        
+        if (objTT == 'lake'):
+            featuresList[2] = 1
+            circle = drawCircle(dwg, color, size, location)
+            prettifyWater(dwg, circle)
+        elif (objTT == 'river'):
+            featuresList[1] = 1
+            drawStraightLine(dwg, color, size, location, chooseEndpt(location))
+        elif(objTT == 'forest'):
+            featuresList[3] = 1
+            background = drawSquare(dwg, color, size, location)
+            fillWithTrees(dwg, background)
+        elif (objTT=='road'):
+            featuresList[0] = 1
+            drawStraightLine(dwg, color, size, location, chooseEndpt(location))
+
     
-    
-
-    size = sizes[sizeTT]
-    location = locations[str(locTT)]
-
-    (x,y) = location
-    x = x + size if x == 0 else x - size
-    y = y + size if y == 0 else y - size
-    location = (x,y)
-
-    #'object': ['lake', 'river', 'forest', 'road'],
-    
-    if (objTT == 'lake'):
-        circle = drawCircle(dwg, color, size, location)
-        prettifyWater(dwg, circle)
-    elif (objTT == 'river'):
-        drawStraightLine(dwg, color, size, location, chooseEndpt(location))
-    elif(objTT == 'forest'):
-        background = drawSquare(dwg, color, size, location)
-        fillWithTrees(dwg, background)
-    elif (objTT=='road'):
-        drawStraightLine(dwg, color, size, location, chooseEndpt(location))
-
-    
-    imgDetails = {"File Name": fileName, "Phrase": phrase, "Road": featuresList[0], "River": featuresList[1], "Lake": featuresList[2], "Forest": featuresList[3]}
+    imgDetails = {"File Name": fileName, "Phrase": phrases, "Road": featuresList[0], "River": featuresList[1], "Lake": featuresList[2], "Forest": featuresList[3]}
 
     #dwg.add(dwg.text(phrase, (100, 400))) #we're not adding the text directly to the picture
     return dwg, imgDetails
@@ -115,7 +123,6 @@ def fillWithTrees(dwg, background):
     #it's going to draw several trees inside the "forest" square at random
 
     numTrees = random.randint(80, 100)
-    print("{} tree(s) drawn".format(numTrees))
 
     loc, size = background
     x, y = loc

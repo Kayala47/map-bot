@@ -4,9 +4,7 @@ As of 7/6/2020
 ## Generating Images and Text
 
 - add color filter to loaded images
-- add more features to each image generation
-- apply NLP to phrase before processing
-    - change drawPhrase so it accepts paragraph
+
 
 ### Optional ###
 - add curves to rivers

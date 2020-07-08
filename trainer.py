@@ -5,6 +5,7 @@ from dictionaries import getSize
 from csv import DictWriter
 import pandas as pd
 import random
+from process_text import process_paragraph
 
 #f = csv.writer(open('output.csv', 'w'))
 
@@ -26,7 +27,7 @@ def upgradeCSV(fileName, fieldNames):
     df.to_csv('output1.csv', index=False)
 
 
-for i in range(0,10):
+for imgNum in range(0,1000):
 
     #generate multiple lines with this code:
     numPhrases = random.randint(1, 10)
@@ -34,17 +35,17 @@ for i in range(0,10):
     for i in range(0, numPhrases):
         paragraph = paragraph + generate()
 
-    phrase = generate()
+    phrases = process_paragraph(paragraph)
 
-    fixedPhrase = phrase.replace(" ", "-")
-    fixedPhrase = fixedPhrase.replace('Draw-a-', '')
-    fixedPhrase = fixedPhrase.replace('in-the-', '')
-    fixedPhrase = fixedPhrase[:-1]
+    phrases = phrases.split("Draw")[1:]
 
-    fileName = "images/" + fixedPhrase + ".svg"
+    phrases = [phrases[i].strip() for i in range(len(phrases))]
+
+    fileName = "images/{}.svg".format(imgNum)
     dwg = svgwrite.Drawing(fileName, profile='full', size=('{}px'.format(size), '{}px'.format(size)) )
 
-    drawnImg, imgDetails = drawThis(phrase, dwg, fileName)
+
+    drawnImg, imgDetails = drawThis(phrases, dwg, fileName)
 
     drawnImg.save()
     #imgDict[phrase] = fileName
