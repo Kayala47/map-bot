@@ -2,6 +2,28 @@
 
 This is where I'll put everything I'm learning in regards to Machine Learning, starting with some of the acronyms Prof. Osborn used. 
 
+
+## Noise Generation ##
+
+For things like map generation, we often want some degree of randomness. Most of the time, we use uniform generators, ie random.randint(1,100) is equally likely to produce numbers in the 1-100 range. Sometimes we can skew it, such as by squaring, square rooting, etc the values so we're more likely to get certain values. 
+
+The problem is, we're still generating each value in isolation. Sometimes you want values appearing together, such as mountains naturally forming with other high terrain near each other. Noise generates values in a set. One example is with a 1D array: say it was generating a bunch of random numbers in a row. To create noise, you could take the min (or max) of the numbers in pairs, moving along the line. You'd end up with noise that was more likely to include clusters, so you'd have a larger area of valleys, mountains close together, etc.
+
+There are several ways to generate noise for 2D/3D: you can use random numbers directly for output, or feed them in as parameters for either sin/cosine, or gradients. Simplex and Perlin Noise is based off using random numbers as parameters for gradients. 
+
+You can also modify the noise you get! You can apply filters to add/remove certain features, add multiple noises together (usually you'd do this with weights so some layers affect more than others), or smooth out the existing noise. 
+
+### Frequency ###
+
+We can adjust frequency to achieve the desired effects. A lower fequency means you're more likely to see similar data bundled together, and higher means you're going to get more variation from space to space. To increase the frequency, you're going to multiply the *input* by some factor: sin(2x) has twice as much frequency as sin(x). 
+
+### Amplitude ###
+
+Increasing the amplitute is a vertical change, it affects how high your values get. To do this, you're going to multiply the *output*. 2 sin(x) has twice as high amplitude as sin(x).
+
+
+Here is the github for examples: [Caseman Noise](https://github.com/caseman/noise/blob/master/examples/2dtexture.py)
+
 ## BERT ##
 
 Explained thanks to: [Towards Data Science BERT page](https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270)
