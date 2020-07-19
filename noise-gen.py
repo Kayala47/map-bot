@@ -4,7 +4,7 @@ import numpy as np
 from scipy.misc import toimage, imsave
 from matplotlib import pyplot as plt
 from PIL import Image
-from apply_filters import make_mountain
+from apply_filters import make_mountain, make_lake
 
 
 blue = [65,105,225]
@@ -48,9 +48,10 @@ def add_color(world, shape):
                 color_world[i][j] = beach
             elif world[i][j] < .60:
                 color_world[i][j] = green
-            elif world[i][j] < 0.75:
+            elif world[i][j] < 0.95:
                 color_world[i][j] = mountain
-            elif world[i][j] < 1.0:
+            else:
+                #anything higher than that would be a distant peak
                 color_world[i][j] = snow
 
     return color_world
@@ -59,13 +60,17 @@ world, shape = make_heightmap()
 
 print(world[800][200])
 
-make_mountain(world, 800, 200)
+make_mountain(world, 800, 200, 0.01)
 
 print(world[800][200])
+
+make_lake(world, 200, 800, 0.01 )
         
 color_world = add_color(world, shape)
 
-color_world[600][600] = [255, 0, 0]
+color_world[800][200] = [255, 0, 0] #mark mountain test
+
+color_world[200][800] = [255, 0, 0] #mark lake text
 
 # print(color_world)
 

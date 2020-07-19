@@ -12,6 +12,8 @@ As of 7/6/2020
         - to represent height, maybe a gradient fill. Topographical map with contours. Simpler would be to approximate contours using ellipses
         - heightlines based off a point
         ^this is all more geared towards pixels
+    - add beaches to lakes
+    - generate roads and rivers
 
 
 ### Optional ###
