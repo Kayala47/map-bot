@@ -31,3 +31,5 @@ def process_paragraph(paragraph):
 paragraph = "Draw a tiny red road in the bottom right corner. Draw a tiny orange forest in the top left corner. Draw a small green forest in the center. Draw a tiny pink lake in the top left corner."
 
 processed_text = process_paragraph(paragraph)
+
+print(processed_text)

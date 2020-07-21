@@ -1,5 +1,7 @@
 from generate_text import generate 
+
 from draw import drawThis
+
 import svgwrite
 from dictionaries import getSize
 from csv import DictWriter
@@ -41,7 +43,8 @@ for imgNum in range(0,1000):
 
     phrases = [phrases[i].strip() for i in range(len(phrases))]
 
-    fileName = "images/{}.svg".format(imgNum)
+    fileName = "heightmap_images/{}.svg".format(imgNum)
+
     dwg = svgwrite.Drawing(fileName, profile='full', size=('{}px'.format(size), '{}px'.format(size)) )
 
 

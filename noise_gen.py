@@ -4,7 +4,7 @@ import numpy as np
 from scipy.misc import toimage, imsave
 from matplotlib import pyplot as plt
 from PIL import Image
-from apply_filters import make_mountain, make_lake
+from apply_filters import make_mountain, make_lake, get_adjacent_cells, make_river
 
 
 blue = [65,105,225]
@@ -50,6 +50,9 @@ def add_color(world, shape):
                 color_world[i][j] = green
             elif world[i][j] < 0.95:
                 color_world[i][j] = mountain
+            elif world[i][j] > 999:
+                #for testing purposes
+                color_world[i][j] = [255, 0, 0] #red
             else:
                 #anything higher than that would be a distant peak
                 color_world[i][j] = snow
@@ -65,12 +68,25 @@ make_mountain(world, 800, 200, 0.01)
 print(world[800][200])
 
 make_lake(world, 200, 800, 0.01 )
+
+print(get_adjacent_cells(world, 200, 800, world[800][200], []))
+
+make_river(world, 130, 100)
+
+print("origin height: {}".format(world[200][100]))
+print("next height: {}".format(world[200][101]))
+
+
+
         
 color_world = add_color(world, shape)
 
+
 color_world[800][200] = [255, 0, 0] #mark mountain test
 
-color_world[200][800] = [255, 0, 0] #mark lake text
+color_world[200][800] = [255, 0, 0] #mark lake test
+
+# color_world[200][80] = [255, 0, 0] #mark river test
 
 # print(color_world)
 
