@@ -8,8 +8,8 @@ def get_loc(string_pos, world_size):
     length, width = world_size
 
     #by default, the range spans the whole map
-    horizontal = (0, length)
-    vertical = (0, width)
+    horizontal = (0, length -  1)
+    vertical = (0, width - 1)
 
     #for the string location, we're expecting 1-3 words tha describe the position of the object
 
@@ -29,7 +29,7 @@ def get_loc(string_pos, world_size):
 
         #vertical
         if (separate_words[0] == 'bottom'):
-            vertical = (second_third, length)
+            vertical = (second_third, length - 1)
         elif (separate_words[0] == 'center'):
             vertical = (first_third, second_third)
         elif (separate_words[0] == 'top'):
@@ -37,7 +37,7 @@ def get_loc(string_pos, world_size):
 
         #horizontal
         if (separate_words[1] == 'right'):
-            horizontal = (second_third, width)
+            horizontal = (second_third, width - 1)
         elif (separate_words[1] == 'center'):
             horizontal = (first_third, second_third)
         elif (separate_words[1] == 'left'):

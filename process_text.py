@@ -15,7 +15,7 @@ def tokenize(text):
     return tokens
 
 def process_paragraph(paragraph):
-    print(paragraph)
+    # print(paragraph)
     processed = ""
 
     tokenized = tokenize(paragraph)
@@ -32,4 +32,4 @@ paragraph = "Draw a tiny red road in the bottom right corner. Draw a tiny orange
 
 processed_text = process_paragraph(paragraph)
 
-print(processed_text)
+# print(processed_text)

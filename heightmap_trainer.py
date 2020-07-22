@@ -1,9 +1,13 @@
 from generate_text import generate 
 
-from draw import drawThis
+from draw_heightmap import drawThis, fillWithTrees
+
+import numpy as np
+
+from PIL import Image
 
 import svgwrite
-from dictionaries import getSize
+# from dictionaries import getSize
 from csv import DictWriter
 import pandas as pd
 import random
@@ -11,9 +15,10 @@ from process_text import process_paragraph
 
 #f = csv.writer(open('output.csv', 'w'))
 
-fieldNames = ['File Name', 'Phrase', 'Road', 'River', 'Lake', 'Mountain']
+fieldNames = ['File Name', 'Phrase', 'Road', 'River', 'Lake', 'Forest', 'Mountain']
+#road, river, lake, forest, mountain
 
-size = getSize()
+# size = getSize()
 
 def append_dict_as_row(file_name, dict_of_elem, field_names):
     # Open file in append mode
@@ -25,11 +30,11 @@ def append_dict_as_row(file_name, dict_of_elem, field_names):
 
 def upgradeCSV(fileName, fieldNames):
     df = pd.read_csv(fileName, header=None)
-    df.rename(columns={0: fieldNames[0], 1:fieldNames[1], 2: fieldNames[2], 3: fieldNames[3], 4: fieldNames[4], 5: fieldNames[5]}, inplace=True)
+    df.rename(columns={0: fieldNames[0], 1:fieldNames[1], 2: fieldNames[2], 3: fieldNames[3], 4: fieldNames[4], 5: fieldNames[5], 6: fieldNames[6]}, inplace=True)
     df.to_csv('output1.csv', index=False)
 
 
-for imgNum in range(0,1000):
+for imgNum in range(0,10):
 
     #generate multiple lines with this code:
     numPhrases = random.randint(1, 10)
@@ -43,17 +48,22 @@ for imgNum in range(0,1000):
 
     phrases = [phrases[i].strip() for i in range(len(phrases))]
 
-    fileName = "heightmap_images/{}.svg".format(imgNum)
+    fileName = "heightmap_images/{}.png".format(imgNum)
 
-    dwg = svgwrite.Drawing(fileName, profile='full', size=('{}px'.format(size), '{}px'.format(size)) )
+    color_world, img_details, forest = drawThis(phrases, fileName)    
 
+    array = np.array(color_world, dtype=np.uint8)
 
-    drawnImg, imgDetails = drawThis(phrases, dwg, fileName)
+    new_image = Image.fromarray(array)
+    new_image.save(fileName)
 
-    drawnImg.save()
-    #imgDict[phrase] = fileName
+    if forest:
+        new_image = fillWithTrees(fileName, forest[0], forest[1])
+        new_image.save(fileName)
+    
+    print(imgNum)
 
-    append_dict_as_row('output.csv', imgDetails, fieldNames)
+    append_dict_as_row('output.csv', img_details, fieldNames)
 
     upgradeCSV('output.csv', fieldNames)
 

@@ -17,10 +17,12 @@ def random_img(output, width, height):
 
 rand_img = random_img('random.png', 1024, 1024)
 
-print(rand_img)
+# print(rand_img)
 
 
 #< -0.05 = blue, -0.5 - 0 = beach, 0 - 0.20 = green, 0.20 - 0.35 mountain, 0.35 - 1.0 snow 
+
+#changed to #< -0.60 = blue, -0.60 - -0.50 = beach, -0.10 - 0.60 = green, 0.60 - 0.75 mountain, 0.75 - 1.0 snow to skew towards green
 
 #the following functions apply a filter to a noise map
 def apply_stationary(img_array, x, y, delta, difference):
@@ -48,23 +50,27 @@ def apply_stationary(img_array, x, y, delta, difference):
         #top
         for i in range(1, length):
             current_x += 1
-            img_array[current_y][current_x] += delta
+            if (current_x > -1 and current_x < 1024 and current_y > -1 and current_y < 1024):
+                img_array[current_y][current_x] += delta
             
         
         #right 
         for i in range(1, length):
             current_y += 1
-            img_array[current_y][current_x] += delta
+            if (current_x > -1 and current_x < 1024 and current_y > -1 and current_y < 1024):
+                img_array[current_y][current_x] += delta
             
         #bottom
         for i in range(1, length):
             current_x -= 1
-            img_array[current_y][current_x] += delta
+            if (current_x > -1 and current_x < 1024 and current_y > -1 and current_y < 1024):
+                img_array[current_y][current_x] += delta
 
         #left
         for i in range(1, length):
             current_y -= 1
-            img_array[current_y][current_x] += delta
+            if (current_x > -1 and current_x < 1024 and current_y > -1 and current_y < 1024):
+                img_array[current_y][current_x] += delta
 
 
         delta -= difference
@@ -88,6 +94,7 @@ def make_lake(img_array, x, y, size):
     lt_x = x - 1 #chooses a corner in the top left
     rt_x = x + 1 #chooses a corner in the top right
 
+
     #from then on change the height in increasing radius away from the point
     while delta < 0.0:
 
@@ -104,23 +111,27 @@ def make_lake(img_array, x, y, size):
         #top
         for i in range(1, length):
             current_x += 1
-            img_array[current_y][current_x] += delta
+            if (current_x > -1 and current_x < 1024 and current_y > -1 and current_y < 1024):
+                img_array[current_y][current_x] += delta
             
         
         #right 
         for i in range(1, length):
             current_y += 1
-            img_array[current_y][current_x] += delta
+            if (current_x > -1 and current_x < 1024 and current_y > -1 and current_y < 1024):
+                img_array[current_y][current_x] += delta
             
         #bottom
         for i in range(1, length):
             current_x -= 1
-            img_array[current_y][current_x] += delta
+            if (current_x > -1 and current_x < 1024 and current_y > -1 and current_y < 1024):
+                img_array[current_y][current_x] += delta
 
         #left
         for i in range(1, length):
             current_y -= 1
-            img_array[current_y][current_x] += delta
+            if (current_x > -1 and current_x < 1024 and current_y > -1 and current_y < 1024):
+                img_array[current_y][current_x] += delta
         
 
         delta += difference
@@ -148,24 +159,15 @@ def make_river(img_array, x, y):
 
     riverLength = 0 #just to make sure it doesn't go on forever
 
-    print("nextPossible before loop: {}".format(nextPossible))
-
     while nextPossible: 
         #while there are possible steps to take, it chooses one randomly and then begins to choose the next one
 
-        print("already used: {}".format(alreadyUsed))
-
-        print("nextPossible during loop: {}".format(nextPossible))
-
         next_y, next_x = nextBlock = random.choice(nextPossible)
-
-        print("chosen: {},{}".format(next_y, next_x))
 
         currentHeight = img_array[next_y][next_x]
         
         img_array[next_y][next_x] += 2 * delta #this will turn that block blue
-       
-
+    
         alreadyUsed.append((next_y, next_x))
 
         #now, it'll generate the new list of possible steps to take based off the last block it selected
@@ -174,7 +176,6 @@ def make_river(img_array, x, y):
         riverLength += 1
 
         if (riverLength > 100):
-            print("reached 100 blocks")
             make_lake(img_array, next_x, next_y, 0.1)
             break
 
@@ -188,8 +189,8 @@ def get_adjacent_cells(img_array, x_coord, y_coord, mainHeight, usedList):
     result = []
     for y, x in [(y_coord+j, x_coord+i) for i in (-1,0,1) for j in (-1,0,1) if i != 0 or j != 0]:
         if x < len(img_array[0]) and img_array[y][x] <= mainHeight and y < len(img_array) and ( x > -1  and y > -1 ) and (y, x) not in usedList and (abs(x_coord - x) <= 1 and abs(y_coord - y) <= 1):
-        
-            result.append((y, x))
+            if (x > 0 and x < 1024 and y > 0 and y < 1024):
+                result.append((y, x))
 
     return result
 

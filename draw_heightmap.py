@@ -2,6 +2,7 @@ import noise_gen as ng
 import apply_filters as af
 from translations import get_loc
 import random
+from PIL import Image
 
 
 def drawThis(phrases, fileName):
@@ -26,34 +27,73 @@ def drawThis(phrases, fileName):
         locTT = " ".join(cutUpPhrase[2:])
         location_ranges = get_loc(locTT, world_size)
         (x_range,y_range) = location_ranges
-        x, y = random.randint(x_range), random.randint(y_range)
+        (ax, bx), (ay, by) = x_range, y_range
+
+        x = random.randint(ax, bx)
+        y = random.randint(ay, by)
 
         location = (x,y)
 
         #'object': ['lake', 'river', 'forest', 'road', 'mountain'],
+        forest = []
         
         if (objTT == 'lake'):
             af.make_lake(world, x, y, default_size)
-            featuresList[0] = 1
+            featuresList[2] = 1
             
         elif (objTT == 'river'):
             af.make_river(world, x, y)
             featuresList[1] = 1
             
         elif(objTT == 'forest'):
-            print("Haven't coded a forest yet :/")
-            featuresList[2] = 1
+            # print("Haven't coded a forest yet :/")
+            forest = [location, default_size]
+            featuresList[3] = 1
 
         elif (objTT=='road'):
             print("Haven't coded a road yet :/")
-            featuresList[3] = 1
+            featuresList[0] = 1
         
         elif (objTT == 'mountain'):
             af.make_mountain(world, x, y, default_size)
             featuresList[4] = 1
 
-    imgDetails = {"File Name": fileName, "Phrase": phrases, "Road": featuresList[0], "River": featuresList[1], "Lake": featuresList[2], "Forest": featuresList[3]}
+    imgDetails = {"File Name": fileName, "Phrase": phrases, "Road": featuresList[0], "River": featuresList[1], "Lake": featuresList[2], "Forest": featuresList[3], "Mountain": featuresList[4]}
     colored_world = ng.add_color(world, world_size)
+    
+    return colored_world, imgDetails, forest
 
-    #dwg.add(dwg.text(phrase, (100, 400))) #we're not adding the text directly to the picture
-    return colored_world, imgDetails
+def fillWithTrees(img_name, loc, size):
+    #it's going to draw several trees inside the "forest" square at random
+
+    numTrees = random.randint(80, 100)
+
+    size = size * 10000
+
+    x, y = loc
+    
+    foreground = Image.open('tree.png').resize((50,50))
+    background = Image.open(img_name)
+
+
+    # # Then get raw PNG data and encode DIRECTLY into the SVG file.
+    # image_data = foreground.make_blob(format='png')
+    # encoded = base64.b64encode(image_data).decode()
+    # pngdata = 'data:image/png;base64,{}'.format(encoded)
+
+    for i in range(0, numTrees):
+        #draws that many # of trees randomly in the square
+        treeX = random.randint(x, min(x + size, 1023))
+        treeY = random.randint(y, min(y + size, 1023))
+
+        background.paste(foreground, (treeX, treeY), foreground.convert('RGBA'))
+        # Image.alpha_composite(background, foreground).save(img_name)
+        # background.show()
+    background.show()
+
+    return background
+
+
+
+
+        

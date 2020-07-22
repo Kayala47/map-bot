@@ -134,7 +134,7 @@ def fillWithTrees(dwg, background):
     encoded = base64.b64encode(image_data).decode()
     pngdata = 'data:image/png;base64,{}'.format(encoded)
 
-    for i in range(0 ,numTrees):
+    for i in range(0, numTrees):
         #draws that many # of trees randomly in the square
         treeX = random.randint(x, x + size)
         treeY = random.randint(y, y + size)

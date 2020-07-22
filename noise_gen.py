@@ -37,14 +37,15 @@ def make_heightmap():
     return world, shape
 
 #< -0.20 = blue, -0.20 - -0.10 = beach, -0.10 - 0.60 = green, 0.60 - 0.75 mountain, 0.75 - 1.0 snow 
+#changed to #< -0.60 = blue, -0.60 - -0.50 = beach, -0.10 - 0.60 = green, 0.60 - 0.75 mountain, 0.75 - 1.0 snow to skew towards green
 
 def add_color(world, shape):
     color_world = np.zeros(world.shape+(3,))
     for i in range(shape[0]):
         for j in range(shape[1]):
-            if world[i][j] < -0.20:
+            if world[i][j] < -0.60:
                 color_world[i][j] = blue
-            elif world[i][j] < -0.10:
+            elif world[i][j] < -0.50:
                 color_world[i][j] = beach
             elif world[i][j] < .60:
                 color_world[i][j] = green
@@ -61,24 +62,18 @@ def add_color(world, shape):
 
 world, shape = make_heightmap()
 
-print(world[800][200])
+# print(world[800][200])
 
 make_mountain(world, 800, 200, 0.01)
 
-print(world[800][200])
+# print(world[800][200])
 
 make_lake(world, 200, 800, 0.01 )
 
-print(get_adjacent_cells(world, 200, 800, world[800][200], []))
+# print(get_adjacent_cells(world, 200, 800, world[800][200], []))
 
 make_river(world, 130, 100)
 
-print("origin height: {}".format(world[200][100]))
-print("next height: {}".format(world[200][101]))
-
-
-
-        
 color_world = add_color(world, shape)
 
 
