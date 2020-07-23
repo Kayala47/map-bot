@@ -46,6 +46,23 @@ def get_loc(string_pos, world_size):
     return (horizontal, vertical)
 
         
+def get_size(string_size, world_size):
+
+    size = 0.01 # by default
+
+    if string_size == 'tiny':
+        return 0.06
+    elif string_size == 'small':
+        return 0.03
+    elif string_size == 'medium':
+        return 0.01
+    elif string_size == 'large':
+        return 0.004
+    elif string_size == 'huge':
+        return 0.002
+    else:
+        return size
+
 
 
 

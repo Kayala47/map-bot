@@ -34,7 +34,7 @@ def upgradeCSV(fileName, fieldNames):
     df.to_csv('output1.csv', index=False)
 
 
-for imgNum in range(0,10):
+for imgNum in range(1335,3000):
 
     #generate multiple lines with this code:
     numPhrases = random.randint(1, 10)

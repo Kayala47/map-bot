@@ -1,8 +1,9 @@
 import noise_gen as ng
 import apply_filters as af
-from translations import get_loc
+from translations import get_loc, get_size
 import random
 from PIL import Image
+import pathfinder as pf
 
 
 def drawThis(phrases, fileName):
@@ -12,6 +13,9 @@ def drawThis(phrases, fileName):
     #make the background and get its size
     world, world_size = ng.make_heightmap()
 
+    roads = []
+    rivers = []
+
     for phrase in phrases:
 
         #Draw a #size# #color# #object# in the #location#
@@ -19,6 +23,7 @@ def drawThis(phrases, fileName):
         
         sizeTT = cutUpPhrase[0]
         default_size = 0.01 #smaller numbers result in larger objects
+        size = get_size(sizeTT, world_size)
 
         # color = cutUpPhrase[1] # no color here yet
         objTT = cutUpPhrase[1]
@@ -38,25 +43,49 @@ def drawThis(phrases, fileName):
         forest = []
         
         if (objTT == 'lake'):
-            af.make_lake(world, x, y, default_size)
+            af.make_lake(world, x, y, size)
             featuresList[2] = 1
             
         elif (objTT == 'river'):
-            af.make_river(world, x, y)
+            rivers.append(location)
+            
             featuresList[1] = 1
             
         elif(objTT == 'forest'):
-            # print("Haven't coded a forest yet :/")
             forest = [location, default_size]
             featuresList[3] = 1
 
         elif (objTT=='road'):
-            print("Haven't coded a road yet :/")
+            roads.append(location)
+            
             featuresList[0] = 1
         
         elif (objTT == 'mountain'):
-            af.make_mountain(world, x, y, default_size)
+            af.make_mountain(world, x, y, size)
             featuresList[4] = 1
+
+    #now draw all the rivers
+    if rivers:
+        for river in rivers:
+            path = pf.make_river(world, river, (random.randint(0, 1023), random.randint(0, 1023)), -1000, 0.60, 0)
+
+            if not path:
+                #this deals with the case where no path was found - then we just try a different one
+                path = pf.make_river(world, location, (random.randint(0, 1023), random.randint(0, 1023)), -1000, 0.60, 0)
+  
+            pf.color_path(world, path, -3)
+
+    #now draw all the roads
+    if roads:
+        for road in roads:
+            path = pf.bfs(world, location, (random.randint(0, 1023), random.randint(0, 1023)), -0.50, 3000)
+
+            if not path:
+                #this deals with the case where no path was found - then we just try a different one
+                path = pf.bfs(world, location, (random.randint(0, 1023), random.randint(0, 1023)), -0.50, 3000)
+
+            pf.color_path(world, path, 1000)
+
 
     imgDetails = {"File Name": fileName, "Phrase": phrases, "Road": featuresList[0], "River": featuresList[1], "Lake": featuresList[2], "Forest": featuresList[3], "Mountain": featuresList[4]}
     colored_world = ng.add_color(world, world_size)
@@ -88,8 +117,8 @@ def fillWithTrees(img_name, loc, size):
 
         background.paste(foreground, (treeX, treeY), foreground.convert('RGBA'))
         # Image.alpha_composite(background, foreground).save(img_name)
-        # background.show()
-    background.show()
+        
+    # background.show()
 
     return background
 

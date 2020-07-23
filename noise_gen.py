@@ -12,6 +12,8 @@ green = [34,139,34]
 beach = [238, 214, 175]
 snow = [255, 250, 250]
 mountain = [139, 137, 137]
+road = [0, 0, 0]
+road_center = [255, 255, 255]
 
 #a good resource = https://medium.com/@yvanscher/playing-with-perlin-noise-generating-realistic-archipelagos-b59f004d8401
 
@@ -51,12 +53,15 @@ def add_color(world, shape):
                 color_world[i][j] = green
             elif world[i][j] < 0.95:
                 color_world[i][j] = mountain
-            elif world[i][j] > 999:
-                #for testing purposes
-                color_world[i][j] = [255, 0, 0] #red
-            else:
+            elif world[i][j] < 2.0:
                 #anything higher than that would be a distant peak
                 color_world[i][j] = snow
+            elif world[i][j] < 1001:
+                #at this point, they are no longer heights, but distinct labels
+                color_world[i][j] = road
+            elif world[i][j] < 3001:
+                color_world[i][j] = road_center 
+                
 
     return color_world
 
